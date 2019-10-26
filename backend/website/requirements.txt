@@ -1,0 +1,10 @@
+Django==2.1
+requests
+gunicorn==19.6.0
+psycopg2-binary==2.7.5
+django-anymail[mailgun]
+django-storages
+Pillow
+boto3
+sentry-sdk==0.10.1
+boto3

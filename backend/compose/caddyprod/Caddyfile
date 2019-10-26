@@ -1,0 +1,13 @@
+instacorrect.com {
+    root /
+    proxy / django:5000 {
+        header_upstream Host {host}
+        header_upstream X-Real-IP {remote}
+        header_upstream X-Forwarded-Proto {scheme}
+        except /static
+        transparent
+    }
+    log stdout
+    errors stdout
+    gzip
+}

@@ -1,0 +1,12 @@
+localhost:443, 192.168.99.100:443, 192.168.99.101:443 {
+    root /
+    proxy / django:8000 {
+        header_upstream Host {host}
+        header_upstream X-Real-IP {remote}
+        header_upstream X-Forwarded-Proto {scheme}
+        except /static
+        transparent
+        insecure_skip_verify
+    }
+    tls self_signed
+}

@@ -1,0 +1,65 @@
+version: '3'
+
+volumes:
+    project29_production_caddy: {}
+    project29_production_postgres_data: {}
+    project29_production_postgres_data_backups: {}
+    project29_production_static: {}
+
+services:
+    django: &django
+      build:
+          context: .
+          dockerfile: ./compose/django/Dockerfile
+      image: production_django
+      depends_on:
+          - postgres
+          - redis
+      volumes:
+          - ./website:/app
+          - project29_production_static:/static
+      env_file:
+          - ./.envs/django/production
+          - ./.envs/postgres/production
+      ports:
+          - "8000:8000"
+      command: /startprod
+      deploy:
+          restart_policy:
+              delay: 5s
+              max_attempts: 3
+    
+    caddy:
+      build:
+          context: ./compose/caddyprod
+          dockerfile: ./Dockerfile
+      image: production_cady
+      depends_on:
+          - django
+      volumes:
+          - correk_production_caddy:/root/.caddy
+          - correk_production_static:/static
+      ports:
+          - "0.0.0.0:80:80"
+          - "0.0.0.0:443:443"
+      logging:
+          driver: "json-file"
+          options:
+              max-size: "200k"
+              max-file: "3"
+
+    postgres:
+      build:
+          context: .
+          dockerfile: ./compose/postgres/Dockerfile
+      image: production_postgres
+      volumes:
+          - project29_production_postgres_data:/var/lib/postgresql/data
+          - project29_production_postgres_data_backups:/backups
+      env_file:
+          - ./.envs/postgres/production
+      logging:
+          driver: "json-file"
+          options:
+              max-size: "200k"
+              max-file: "3"

@@ -1,0 +1,5 @@
+#!/bin/sh
+
+rm -f './celerybeat.pid'
+mkdir -p /var/run/celery/
+celery -A website beat -l INFO -s /var/run/celery/beat-schedule

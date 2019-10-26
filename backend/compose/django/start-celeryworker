@@ -1,0 +1,2 @@
+#!/bin/sh
+celery -A website worker --loglevel=info --concurrency=1

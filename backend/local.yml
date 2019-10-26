@@ -1,0 +1,45 @@
+version: '3'
+
+volumes:
+    project29_local_caddy: {}
+    project29_local_postgres_data: {}
+    project29_local_postgres_data_backups: {}
+    project29_local_static: {}
+
+services:
+    django: &django
+      build:
+          context: .
+          dockerfile: ./compose/django/Dockerfile
+      image: local_django
+      depends_on:
+          - postgres
+      volumes:
+          - ./website:/app
+          - project29_local_static:/static
+      env_file:
+          - ./.envs/django/local
+          - ./.envs/postgres/local
+      ports:
+          - "8000:8000"
+      command: /start
+      deploy:
+          restart_policy:
+              delay: 5s
+              max_attempts: 3
+
+    postgres:
+      build:
+          context: .
+          dockerfile: ./compose/postgres/Dockerfile
+      image: local_postgres
+      volumes:
+          - project29_local_postgres_data:/var/lib/postgresql/data
+          - project29_local_postgres_data_backups:/backups
+      env_file:
+          - ./.envs/postgres/local
+      logging:
+          driver: "json-file"
+          options:
+              max-size: "200k"
+              max-file: "3"

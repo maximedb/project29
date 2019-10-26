@@ -1,0 +1,5 @@
+backend/.envs/django/local
+backend/.envs/django/production
+backend/.envs/postgres/local
+backend/.envs/postgres/production
+*.pyc
